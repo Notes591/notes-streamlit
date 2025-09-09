@@ -12,10 +12,16 @@ creds_dict = st.secrets["gcp_service_account"]
 creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client = gspread.authorize(creds)
 
-# افتح الشيت
-SHEET_NAME = "Notes"
-sheet = client.open(SHEET_NAME).sheet1
+# افتح أول شيت متاح (زي الكود القديم)
+sheets = client.openall()
+if not sheets:
+    st.error("❌ مفيش أي Google Sheet متشارك مع الحساب ده.")
+    st.stop()
 
+sheet = sheets[0].sheet1
+st.caption(f"✅ متصل بالشيت: {sheets[0].title}")
+
+# ====== إعدادات واجهة ستريملت ======
 st.set_page_config(page_title="برنامج الملاحظات (نسخة ويب)", page_icon="📝", layout="centered")
 
 st.title("🟨 برنامج الملاحظات (نسخة ويب)")
