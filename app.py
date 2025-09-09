@@ -48,12 +48,13 @@ with st.form("add_note_form"):
 st.subheader("📋 كل الملاحظات:")
 
 notes = sheet.get_all_values()
-if notes:
-    for i, row in enumerate(notes, start=1):
+
+if len(notes) > 1:  # لازم يكون فيه صفوف غير الهيدر
+    for i, row in enumerate(notes[1:], start=2):  # نتجاهل الصف الأول (الهيدر)
         title = row[0] if len(row) > 0 else ""
         content = row[1] if len(row) > 1 else ""
-        
-        st.write(f"### {i}- {title}")
+
+        st.write(f"### {i-1}- {title}")  # عرض رقم الملاحظة بدون الهيدر
         st.write(content)
 
         col1, col2 = st.columns(2)
@@ -65,7 +66,7 @@ if notes:
                 new_content = st.text_area("المحتوى", value=content)
                 save_changes = st.form_submit_button("💾 حفظ التعديلات")
                 if save_changes:
-                    sheet.update(f"A{i}", [[new_title, new_content]])
+                    sheet.update(f"A{i}:B{i}", [[new_title, new_content]])
                     st.success("✅ تم تعديل الملاحظة!")
                     st.rerun()
 
